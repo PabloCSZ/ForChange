@@ -9,32 +9,8 @@
 # DataMp_sf from "4_0_climate_data.R" is required
 # TreesI3 from "2_0_data_loading.R" is required
 
-# calculation new variables to estimate DBH and field area ------------
 
-# Calculate an average tree diameter
-TreesI3$Dn <- (TreesI3$Dn1 + TreesI3$Dn1)/2 # average DBH per tree
-
-# calculate sampling area based on the tree diameter in each plot
-TreesI3$area <- 0
-for(i in 1:nrow(TreesI3)){
-  if(!is.na(TreesI3$Dn[i])){
-    if(TreesI3[i,21] < 125){
-      TreesI3$area[i] <- paste0("5")
-    } else 
-      if(TreesI3[i,21] >= 125 & TreesI3[i,21] < 225){
-        TreesI3$area[i] <- paste0("10")
-      }else
-        if(TreesI3[i,21] >= 225 & TreesI3[i,21] < 425){
-          TreesI3$area[i] <- paste0("15")
-        }else
-          TreesI3$area[i] <- paste0("25")
-  } else 
-    TreesI3$area[i] <- NA
-}
-
-TreesI3$area <- as.numeric(TreesI3$area)
-
-#  Calculate BEMs 
+#  Calculate BEMs --------------
 
 allo <- read_delim("data/Allom/Allometric.txt", ## Paloma sheet with species paramenters
                    "\t", escape_double = FALSE, trim_ws = TRUE)

@@ -71,12 +71,62 @@ TreesI3 <- lapply(TreesI3, function(x) {x <- x[!names(x)=='DRed']; x}) ## replac
 names(TreesI3) <- c("Almeria", "Cadiz", "Cordoba", "Granada", "Huelva", "Jaen", "Malaga", "Sevilla")
 TreesI3 <- dplyr::bind_rows(TreesI3, .id = "Provincia")
 
+# calculation new variables to estimate DBH and field area
+# Calculate an average tree diameter
+TreesI3$Dn <- (TreesI3$Dn1 + TreesI3$Dn2)/2 # average DBH per tree
+
+# calculate sampling area based on the tree diameter in each plot
+TreesI3$area <- 0
+for(i in 1:nrow(TreesI3)){
+  if(!is.na(TreesI3$Dn[i])){
+    if(TreesI3[i,21] < 125){
+      TreesI3$area[i] <- paste0("5")
+    } else 
+      if(TreesI3[i,21] >= 125 & TreesI3[i,21] < 225){
+        TreesI3$area[i] <- paste0("10")
+      }else
+        if(TreesI3[i,21] >= 225 & TreesI3[i,21] < 425){
+          TreesI3$area[i] <- paste0("15")
+        }else
+          TreesI3$area[i] <- paste0("25")
+  } else 
+    TreesI3$area[i] <- NA
+}
+
+TreesI3$area <- as.numeric(TreesI3$area)
+
 # Joining all the PCMayores2 into TreesI2 ------------------
 TreesI2 <- lapply(Cdb, function(x) rbind(x[6]))
 TreesI2 <- do.call("rbind", TreesI2)
 TreesI2 <- lapply(TreesI2, function(x) {names(x)[names(x)=='Distanci'] <- 'Distancia'; x}) ## replace wrong names
 names(TreesI2) <- c("Almeria", "Cadiz", "Cordoba", "Granada", "Huelva", "Jaen", "Malaga", "Sevilla")
 TreesI2 <- dplyr::bind_rows(TreesI2, .id = "Provincia")
+
+# calculation new variables to estimate DBH and field area
+# Calculate an average tree diameter
+TreesI2$Diametro1 <- as.numeric(TreesI2$Diametro1)
+TreesI2$Diametro2 <- as.numeric(TreesI2$Diametro2)
+TreesI2$Dn <- (TreesI2$Diametro1 + TreesI2$Diametro2)/2 # average DBH per tree
+
+# calculate sampling area based on the tree diameter in each plot
+TreesI2$area <- 0
+for(i in 1:nrow(TreesI2)){
+  if(!is.na(TreesI2$Dn[i])){
+    if(TreesI2[i,13] < 125){
+      TreesI2$area[i] <- paste0("5")
+    } else 
+      if(TreesI2[i,13] >= 125 & TreesI2[i,13] < 225){
+        TreesI2$area[i] <- paste0("10")
+      }else
+        if(TreesI2[i,13] >= 225 & TreesI2[i,13] < 425){
+          TreesI2$area[i] <- paste0("15")
+        }else
+          TreesI2$area[i] <- paste0("25")
+  } else 
+    TreesI2$area[i] <- NA
+}
+
+TreesI2$area <- as.numeric(TreesI2$area)
 
 # Joining all the PCParcelas into Plots --------------------
 Plots <- lapply(Cdb, function(x) rbind(x[8]))
