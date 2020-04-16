@@ -178,3 +178,43 @@ levels(DataMp$Provincia) <- c("Almeria", "Cadiz", "Cordoba", "Granada", "Huelva"
 DataMp2 <- merge(DataMp, Plots2[,c(1,2,5,6)], by = c("Provincia","Estadillo"), all.x = TRUE)
 DataMp2$CoorXp <- ifelse(is.na(DataMp2$CoorXp), paste(DataMp2$CoorX), paste(DataMp2$CoorXp))
 DataMp2$CoorYp <- ifelse(is.na(DataMp2$CoorYp), paste(DataMp2$CoorY), paste(DataMp2$CoorYp))
+
+
+## Cleaning DataMp2  ----------
+
+DataMp2 <- DataMp2[,-c(4,8:14,18:20)]
+DataMp2$Provincia <- as.factor(DataMp2$Provincia)
+DataMp2$Clase <- as.factor(DataMp2$Clase)
+DataMp2$Estadillo <- as.factor(DataMp2$Estadillo)
+DataMp2$Hoja50 <- as.factor(DataMp2$Hoja50)
+DataMp2$CoorX <- as.numeric(DataMp2$CoorX)
+DataMp2$CoorY <- as.numeric(DataMp2$CoorY)
+DataMp2$FccTot <- as.numeric(DataMp2$FccTot)
+DataMp2$FccArb <- as.numeric(DataMp2$FccArb)
+DataMp2$DisEsp <- as.factor(DataMp2$DisEsp)
+DataMp2$CoorXp <- as.numeric(DataMp2$CoorXp) # high precision coordinate
+DataMp2$CoorYp <- as.numeric(DataMp2$CoorYp) # high precision coordinate
+
+# replacing a few wrong coordinates in DataMp2
+
+v <- c(rownames(DataMp2[which(DataMp2$Provincia =="Huelva" & DataMp2$Estadillo == "0668"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Huelva" & DataMp2$Estadillo == "0734"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Huelva" & DataMp2$Estadillo == "1800"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Huelva" & DataMp2$Estadillo == "1224"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Malaga" & DataMp2$Estadillo == "2047"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Malaga" & DataMp2$Estadillo == "0409"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Malaga" & DataMp2$Estadillo == "0841"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Sevilla" & DataMp2$Estadillo == "0562"),]),
+       rownames(DataMp2[which(DataMp2$Provincia =="Cordoba" & DataMp2$Estadillo == "0950"),]))
+errors <- DataMp2[row.names(DataMp2)%in%v,] # extracting only wrong data
+errors$CoorXp <- errors$CoorX # replacing the coordinate
+errors$CoorYp <- errors$CoorY
+DataMp2 <- DataMp2[!row.names(DataMp2)%in%v,] # Deleting wrong coordinates from DataMp2
+DataMp2 <- rbind(DataMp2,errors) # rbinding DataMp2 and corrected plots
+
+# Using dataMp2 coordinates to correct Plots2 coordinates -----
+
+colnames(Plots2)[5] <- "CoorX"
+colnames(Plots2)[6] <- "CoorY"
+
+Plots2 <- merge(Plots2,DataMp2[,c(1,2,10,11)], by = c("Provincia","Estadillo"), all.x = TRUE)

@@ -56,4 +56,25 @@ t3t2_allo$Biomass_2 <- t3t2_allo$CFA*(t3t2_allo$Dn_2/10)^t3t2_allo$b
 t3t2_allo$RBiomass_3 <- t3t2_allo$CFAr*(t3t2_allo$Dn_3/10)^t3t2_allo$br # Biomass in kg per tree
 t3t2_allo$RBiomass_2 <- t3t2_allo$CFAr*(t3t2_allo$Dn_2/10)^t3t2_allo$br
 
-## calculating Biomass per Ha for T2 ------------------
+## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
+
+t3t2_allo <- t3t2_allo %>%
+  mutate(B3_Mgha = Biomass_3/(0.000314159265*area_3^2)/1000) %>% # Biomass T3
+  mutate(B2_Mgha = Biomass_2/(0.000314159265*area_2^2)/1000) %>% # Biomass T2
+  mutate(R3_Mgha = RBiomass_3/(0.000314159265*area_3^2)/1000) %>% # Biomass R3
+  mutate(R2_Mgha = RBiomass_2/(0.000314159265*area_2^2)/1000) # Biomass R2
+
+## lost biomass (Mg/ha) because T3 show no tree --------------
+
+t3t2_allo <- t3t2_allo %>%
+  mutate(lost = if_else(is.na(Dn_3), "dead", "alive"))
+ 
+t3t2_list <- t3t2_allo %>%
+  drop_na(B3_Mgha,B2_Mgha) %>% #exclude cases with no tree in T3 or T2, or no BEM for specie
+  group_by(lost, specie) %>%
+  summarise(B3 = sum(B3_Mgha), B2 = sum(B2_Mgha), N = n()) %>%
+  mutate(G = B3-B2) 
+
+t<- t3t2_allo %>%
+  filter(specie == "067")
+  

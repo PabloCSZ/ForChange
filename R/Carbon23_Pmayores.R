@@ -20,11 +20,12 @@ allo <- read.table(file="data/dove/Allometric.txt", header = TRUE, sep = "\t",
 ## filter Andalucia only
 
 summary(tree3$Provincia3)
-Atree3 <- tree3 %>%
+tree3 <- tree3 %>%
   filter(Provincia3 %in% c("4", "11", "14", "18", "21", "23", "29", "41"))
-
+tree2 <- tree2 %>%
+  filter(Provincia2 %in% c("4", "11", "14", "18", "21", "23", "29", "41"))
 ####1. Selección parcelas permanentes: clases A1 y A3C####
-Atree3 <- Atree3[Atree3$Cla3 == 'A' & Atree3$Subclase3 %in% c('1',"3C"),]
+tree3 <- tree3[tree3$Cla3 == 'A' & tree3$Subclase3 %in% c('1',"3C"),]
 
 # This is where I want to chck for the OrdenIf filter
 
@@ -222,11 +223,11 @@ write_csv(treefinal32, "4results\\20200411_tree23_biomass.csv", col_names = TRUE
 ####### Unión a nivel de parcela
 ########
 #######################################################################
-plot2 <- read_csv(file = "2data\\plotcode234.csv")
-plot3 <- read_csv(file = "2data\\plotcampo3.csv")
+plot2 <- read_csv(file = "data/dove/plotcode234.csv")
+plot3 <- read_csv(file = "data/dove/plotcampo3.csv")
 
-head(names(plot2))
-head(names(plot3))
+names(plot2)
+names(plot3)
 
 #Union plots a nivel de parcela
 pplot32 <- merge(plot3, plot2, by.x = "Plotcode3", by.y = "Plotcode")
@@ -234,6 +235,7 @@ names(pplot32)
 
 pplot32$year32 <- pplot32$year3 - pplot32$year2
 summary(pplot32$year32)
+summary(pplot32$Dif23.x)
 pplot32$year32[pplot32$year32 < 6] <- pplot32$Dif23.x[pplot32$year32 < 6]
 
 plot32 <- pplot32[,c("IDPC3","Plotcode3","CXed50","CYed50","year2","year3",

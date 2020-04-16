@@ -25,7 +25,7 @@ library(sp)
 library(raster)
 library(rgdal)
 library(lwgeom)
-
+library(envirem)
 # To create graphical display of spatial data
 library(mapview)
 library(tmap)

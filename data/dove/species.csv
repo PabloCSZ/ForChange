@@ -1,0 +1,97 @@
+Code,Code3,Code2,Nombre,Nombre1,Tipo,Family,Arborea_matorral,Source,Reference,ISSG,DAISIE
+012,12,012,Malus sylvestris,Malus sylvestris,D,Rosaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 1 (1768),NR,A
+013,13,013,Celtis australis,Celtis australis,D,Ulmaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1043 (1753),NR,DAISIE
+014,14,014,Taxus baccata,Taxus baccata,C,Taxaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1040 (1753),NR,A
+015,15,015,Crataegus spp.,Crataegus spp.,D,Rosaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 475 (1753),NR,A
+016,16,016,Pyrus spp.,Pyrus spp.,D,Rosaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 479 (1753),NR,A
+017,17,017,Cedrus atlantica,Cedrus atlantica,C,Pinaceae,Arborea,Flora Europaea,Traité Gén. Conif. ed. 1 285 (1855),NR,DAISIE
+018,18,018,Chamaecyparis lawsoniana,Chamaecyparis lawsoniana,C,Cupressaceae,Arborea,Flora Europaea,Ann. Mus. Firenze nov. ser. 1: 181 (1866),NR,DAISIE
+007,207,007,Acacia melanoxylon,Acacia melanoxylon,O,Leguminosae,Arborea,Flora Europaea,Hort. Kew. ed. 2 5: 462 (1813),E,DAISIE
+021,21,021,Pinus sylvestris,Pinus sylvestris,C,Pinaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1000 (1753),NA,A
+015,215,015,Crataegus monogyna,Crataegus monogyna,D,Rosaceae,Arborea,Flora Europaea,Fl. Austr. 3: 50 (1775),NR,A
+022,22,022,Pinus uncinata,Pinus uncinata,C,Pinaceae,Arborea,Flora Europaea, Hist. Nat. Pl. 10: 213 (1806),NA,A
+023,23,023,Pinus pinea,Pinus pinea,C,Pinaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1000 (1753),NA,A
+035,235,035,Larix decidua,Larix decidua,D,Pinaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 1 (1768),NR,DAISIE
+236,236,036,Cupressus arizonica,Cupressus arizonica,C,Cupressaceae,Arborea,Flora Europaea,Bull. Torrey Bot. Club 9: 64 (1882),NR,DAISIE
+237,237,037,Juniperus oxycedrus,Juniperus oxycedrus,C,Cupressaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1038 (1753),NR,A
+024,24,024,Pinus halepensis,Pinus halepensis,C,Pinaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 8 (1768),NA,A
+243,243,043,Quercus pubescens (Q. Humilis),Quercus pubescens (Q. Humilis),D,Fagaceae,Arborea,Flora Europaea,Berlin. Baumz. ed. 1 279 (1796),NR,A
+025,25,025,Pinus nigra,Pinus nigra,C,Pinaceae,Arborea,Flora Europaea,Reise Mariazell 8 (1785),NA,A
+255,255,055,Fraxinus excelsior,Fraxinus excelsior,D,Oleaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1057 (1753),NR,A
+256,256,056,Ulmus glabra,Ulmus glabra,D,Ulmaceae,Arborea,Flora Europaea,Fl. Angl. ed. 1 95 (1762),NR,A
+057,257,057,Salix alba,Salix alba,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1021 (1753),NR,A
+258,258, NA,Populus x canadensis,Populus x canadensis,D-Ex,Salicaceae,Arborea,Flora Europaea,Verz. Ausl. Bäume Weissenst. 81 (1785),NR,DAISIE
+026,26,026,Pinus pinaster,Pinus pinaster,C,Pinaceae,Arborea,Flora Europaea,Hort. Kew. ed. 1 3: 367 (1789),NA,A
+264,264,064,Eucalyptus viminalis,Eucalyptus viminalis,D,Myrtaceae,Arborea,Flora Europaea,Nov. Holl. Pl. 2: 12 (1806),NR,DAISIE
+073,273,073,Betula alba,Betula alba,D,Betulaceae,Arborea,NA,NA,NR,A
+276,276,076,Acer monspessulanum,Acer monspessulanum,D,Aceraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1056 (1753),NR,A
+077,277,077,Tilia cordata,Tilia cordata,D,Tiliaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 1 (1768),NR,A
+078,278,078,Sorbus aria,Sorbus aria,D,Rosaceae,Arborea,Flora Europaea,Austr. ed. 1 2: 46 (1763),NR,A
+028,28,028,Pinus radiata,Pinus radiata,C,Pinaceae,Arborea,Flora Europaea,Trans. Linn. Soc. London 17: 442 (1836),NA,DAISIE
+299,299, NA,Ficus carica,Ficus carica,D,Moraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1059 (1753),NR,DAISIE
+003,3,003,Frangula alnus,Frangula alnus,D,Rhamnaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 1 (1768),Native,A
+007,307,007,Acacia dealbata,Acacia dealbata,O,Leguminosae,Arborea,Flora Europaea,Enum. Hort. Berol. Alt. 2: 445 (1822),NR,DAISIE
+031,31,031,Abies alba,Abies alba,C,Pinaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 1 (1768),NR,A
+033,33,033,Picea abies,Picea abies,C,Pinaceae,Arborea,Flora Europaea,Deutsche Fl. ed. 1 324 (1881),NR,DAISIE
+034,34,034,Pseudotsuga menziesii,Pseudotsuga menziesii,C,Pinaceae,Arborea,Flora Europaea,Conif. Duar. Nom. 4 (1950),NR,DAISIE
+035,35,035,Larix spp.,Larix spp.,C,Pinaceae,Arborea,Flora Europaea,Dict. abr. ed. 4 (1754),NR,E
+356,356,056,Ulmus pumila,Ulmus pumila,D,Ulmaceae,Arborea,IPNI,NA,NR,DAISIE
+057,357,057,Salix atrocinerea,Salix atrocinerea,D,Salicaceae,Arborea,Flora Europaea,Fl. Lusit. 1: 31 (1804),NR,A
+036,36,036,Cupressus sempervirens,Cupressus sempervirens,C,Cupressaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1002 (1753),NR,DAISIE
+364,364,064,Eucalyptus gomphocephalus,Eucalyptus gomphocephalus,D,Myrtaceae,Arborea,Flora Europaea,Prodr. 3: 220 (1828),NR,DAISIE
+037,37,037,Juniperus communis,Juniperus communis,C,Cupressaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1040 (1753),NR,A
+073,373,073,Betula pendula,Betula pendula,D,Betulaceae,Arborea,Flora Europaea,Tent. Fl. Germ. 1: 405 (1788),NR,A
+376,376,076,Acer negundo,Acer negundo,D,Aceraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1056 (1753),NR,DAISIE
+077,377,077,Tilia platyphyllos,Tilia platyphyllos,D,Tiliaceae,Arborea,Flora Europaea,Fl. Carn. ed. 2 1: 373 (1772),NR,A
+078,378,078,Sorbus aucuparia,Sorbus aucuparia,D,Rosaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 477 (1753),NR,A
+038,38,038,Juniperus thurifera,Juniperus thurifera,C,Cupressaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1039 (1753),NR,A
+039,39,039,Juniperus phoenicea,Juniperus phoenicea,C,Cupressaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1040 (1753),NR,A
+095,395,095,Prunus avium,Prunus avium,D,Rosaceae,Arborea,Flora Europaea,Fl. Suec. ed. 2 165 (1755),NR,A
+004,4,004,Rhamnus alaternus,Rhamnus alaternus,E,Rhamnaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 193 (1753),Native,A
+041,41,041,Quercus robur,Quercus robur,D,Fagaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 996 (1753),NR,A
+042,42,042,Quercus petraea,Quercus petraea,D,Fagaceae,Arborea,Flora Europaea,Fl. Fuld. 403 (1784),NR,A
+043,43,043,Quercus pyrenaica,Quercus pyrenaica,D,Fagaceae,Arborea,Flora Europaea,Sp. Pl. 4(1): 451 (1805),NR,A
+044,44,044,Quercus faginea,Quercus faginea,D,Fagaceae,Arborea,Flora Europaea,Encycl. Méth. Bot. 1: 725 (1785),NR,A
+045,45,045,Quercus ilex,Quercus ilex,E,Fagaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 995 (1753),NR,A
+057,457,057,Salix babylonica,Salix babylonica,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1017 (1753),Exotic,DAISIE
+046,46,046,Quercus suber,Quercus suber,E,Fagaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 995 (1753),NR,A
+047,47,047,Quercus canariensis,Quercus canariensis,D,Fagaceae,Arborea,Flora Europaea,Enum. Pl. Horti Berol. 975 (1809),NR,A
+476,476,076,Acer opalus,Acer opalus,D,Aceraceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 8 (1768),NR,A
+048,48,048,Quercus rubra,Quercus rubra,D-Ex,Fagaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 996 (1753),NR,DAISIE
+051,51,051,Populus alba,Populus alba,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1034 (1753),Native,A
+052,52,052,Populus tremula,Populus tremula,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1034 (1753),NR,A
+053,53,053,Tamarix spp.,Tamarix spp.,E,Tamaricaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 270 (1753),NR,NA
+054,54,054,Alnus glutinosa,Alnus glutinosa,D,Betulaceae,Arborea,Flora Europaea,Fruct. Sem. Pl. 2: 54 (1790),Native,A
+055,55,055,Fraxinus angustifolia,Fraxinus angustifolia,D,Oleaceae,Arborea,Flora Europaea,Enum. Pl. 1: 52 (1804),NR,A
+056,56,056,Ulmus minor,Ulmus minor,D,Ulmaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 6 (1768),NR,A
+057,57,057,Salix spp.,Salix spp.,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1015 (1753),NR,A
+576,576,076,Acer pseudoplatanus,Acer pseudoplatanus,D,Aceraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1054 (1753),NR,A
+078,578,078,Sorbus torminalis,Sorbus torminalis,D,Rosaceae,Arborea,Flora Europaea,Stirp. Austr. ed. 1 2: 45 (1763),NR,A
+058,58,058,Populus nigra,Populus nigra,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1034 (1753),NR,A
+061,61,061,Eucalyptus globulus,Eucalyptus globulus,D,Myrtaceae,Arborea,Flora Europaea,Rel. Voy. Rech. La Pérouse 1: 153 (1800),NR,DAISIE
+062,62,062,Eucalyptus camaldulensis,Eucalyptus camaldulensis,D,Myrtaceae,Arborea,Flora Europaea,Cat. Pl. Horti Camald. ed. 2 20 (1832),NR,DAISIE
+063,63,063,Otros eucaliptos,Otros eucaliptos,E-Ex,SF,NoSpp,Flora Europaea,NA,NA,E
+064,64,064,Eucalyptus nitens,Eucalyptus nitens,D,Myrtaceae,Arborea,World check list,Crit. Revis. Eucalyptus 2: 272 (1913),NR,DAISIE
+065,65,065,Ilex aquifolium,Ilex aquifolium,E,Aquifoliaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 125 (1753),NR,A
+057,657,057,Salix caprea,Salix caprea,D,Salicaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1020 (1753),NR,A
+066,66,066,Olea europaea,Olea europaea,E,Oleaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 8 (1753),NR,DAISIE
+676,676,076,Acer platanoides,Acer platanoides,D,Aceraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1055 (1753),Native,DAISIE
+068,68,068,Arbutus unedo,Arbutus unedo,E,Ericaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 395 (1753),NR,A
+007,7,007,Acacia spp.,Acacia spp.,O,Leguminosae,Arborea,Flora Europaea,Gard. Dict. abr. ed. 4 (1754),E,DAISIE
+071,71,071,Fagus sylvatica,Fagus sylvatica,D,Fagaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 998 (1753),NA,A
+072,72,072,Castanea sativa,Castanea sativa,D,Fagaceae,Arborea,Flora Europaea,Gard. Dict. ed. 8 no. 1 (1768),NR,DAISIE
+073,73,073,Betula spp.,Betula spp.,D,Betulaceae,Arborea,Flora Europaea,NA,NR,A
+074,74,074,Corylus avellana,Corylus avellana,D,Betulaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 998 (1753),NR,A
+075,75,075,Juglans regia,Juglans regia,D,Juglandaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 997 (1753),NR,DAISIE
+057,757,057,Salix elaeagnos,Salix elaeagnos,D,Salicaceae,Arborea,Flora Europaea,Fl. Carn. ed. 2 2: 257 (1772),NR,A
+076,76,076,Acer campestre,Acer campestre,D,Aceraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 1055 (1753),NR,A
+077,77,077,Tilia spp.,Tilia spp.,D,Tiliaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 514 (1753),NR,A
+078,78,078,Sorbus spp.,Sorbus spp.,D,Rosaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 477 (1753),NR,A
+079,79,079,Platanus hispanica,Platanus hispanica,D,Platanaceae,Arborea,IPNI,NA,NR,DAISIE
+008,8,008,Phillyrea latifolia,Phillyrea latifolia,E,Oleaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 8 (1753),NR,A
+091,91,091,Buxus sempervirens,Buxus sempervirens,E,Buxaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 983 (1753),NR,A
+092,92,092,Robinia pseudacacia,Robinia pseudacacia,D,Leguminosae,Arborea,Flora Europaea,Sp. Pl. ed. 1 722 (1753),NR,DAISIE
+094,94,094,Laurus nobilis,Laurus nobilis,L,Lauraceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 369 (1753),NR,A
+095,95,095,Prunus spp.,Prunus spp.,D,Rosaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 473 (1753),NR,A
+097,97,097,Sambucus nigra,Sambucus nigra,D,Caprifoliaceae,Arborea,Flora Europaea,Sp. Pl. ed. 1 269 (1753),NR,A
+099,99,099,Otras frondosas,Otras frondosas,D,SF,NoSpp,NA,NA,NA,NA
