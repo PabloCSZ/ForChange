@@ -64,12 +64,13 @@ Biom_m2_sf <- merge(DataMp_sf[,c(3:5,14:32)], Biom_m2, by = c("Provincia","Estad
 
 # Calculate Biomass percentage per species within each plot
 Biom_m2_sp_1 <- left_join(Biom_m2_sp, Biom_m2[1:3], by = c("Provincia", "Estadillo"))
-Biom_m2_sp_1$bio_perc <- Biom_m2_sp_1$bio_sp_m2/Biom_m2_sp_1$bio_plot_m2*100 
-Biom_m2_sp_1$bio_treeSp_mean <- Biom_m2_sp_1$bio_sp_m2/Biom_m2_sp_1$N_trees 
+Biom_m2_sp_1 <- Biom_m2_sp_1 %>%
+  mutate(bio_perc = bio_sp_m2/bio_plot_m2*100,
+         bio_treeSp_mean = bio_sp_m2/N_trees)
 Biom_m2_sp_1$bio_plot_m2 <- NULL
 Biom_m2_sp_1 <- Biom_m2_sp_1[,c(1,2,3,5,6,4,7,8)]
 
-Biom_m2_sp_sf <- merge(DataMp_sf[,c(3:5,14:32)], Biom_m2_sp_1, by = c("Provincia","Estadillo"))
+Biom_m2_sp_sf <- merge(DataMp_sf[,c(3:5,14:34)], Biom_m2_sp_1, by = c("Provincia","Estadillo"))
 #write.csv(Biom_m2_sp_sf, "Biomass por estadillo y especie.csv")
 
 # Transform the dataframe to show species (and its variables) in different columns-----------

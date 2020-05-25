@@ -29,35 +29,33 @@ Palmer <- raster(file.path("Data/Climate/palmer_cru/scPDSI.cru_ts4.03early1.1901
 ## Getting Chelsea data ------------------
 
 ## Run ONLY if you need to download Chelsa current conditions (1979-2013) ####
-y <- "1979-2013"
-m <- 12
-
-for (m in 1:12){
-  mm <- ifelse(nchar(m) < 2,
-             paste("0", m, sep=""),m)
-  #mean
-  file <- paste("CHELSA_temp10_", mm,
-                "_", y, "_V1.2_land.tif", sep="")
-  download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/temp/integer/temp/", file,sep=""),
-                destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
-  #min temp
-  file <- paste("CHELSA_tmin10_", mm,
-                "_", y, "_V1.2_land.tif", sep="")
-  download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/temp/integer/tmin/", file,sep=""),
-                destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
-  
-  #max temp
-  file <- paste("CHELSA_tmax10_", mm,
-                "_", y, "_V1.2_land.tif", sep="")
-  download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/temp/integer/tmax/", file,sep=""),
-                destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
-  
-  #precip
-  file <- paste("CHELSA_prec_", mm,
-                "_V1.2_land.tif", sep="")
-  download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/prec/", file,sep=""),
-                destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
-}
+# y <- "1979-2013"
+# m <- 12
+# 
+# for (m in 1:12){
+#   mm <- ifelse(nchar(m) < 2,
+#              paste("0", m, sep=""),m)
+#   #mean
+#   file <- paste("CHELSA_temp10_", mm,
+#                 "_", y, "_V1.2_land.tif", sep="")
+#   download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/temp/integer/temp/", file,sep=""),
+#                 destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
+#   #min temp
+#   file <- paste("CHELSA_tmin10_", mm,
+#                 "_", y, "_V1.2_land.tif", sep="")
+#   download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/temp/integer/tmin/", file,sep=""),
+#                 destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
+#   #max temp
+#   file <- paste("CHELSA_tmax10_", mm,
+#                 "_", y, "_V1.2_land.tif", sep="")
+#   download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/temp/integer/tmax/", file,sep=""),
+#                 destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
+#   #precip
+#   file <- paste("CHELSA_prec_", mm,
+#                 "_V1.2_land.tif", sep="")
+#   download.file(paste("https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/climatologies/prec/", file,sep=""),
+#                 destfile=paste("data/ChelsaClimate/", file,sep=""), mode="wb")
+# }
 
 ## Load raster of current conditions (1996) for the Chelsa data nd stack them ####
 # Create empty raster objects first
@@ -87,7 +85,7 @@ ta1996 <- crop(ta1996, andalucia)
 maxta1996 <- crop(maxta1996, andalucia) 
 minta1996 <- crop(minta1996, andalucia) 
 pp1996 <- crop(pp1996, andalucia) 
-plot(ta1996[[6]])
+
 
 ## computting Chelsa PET and Aridity ####
 # Below are lines of codes for computting PET at the original resolution, 30-arc second
@@ -107,7 +105,7 @@ names(pp1996)<-c("precip_01","precip_02","precip_03","precip_04","precip_05","pr
                  "precip_07","precip_08","precip_09","precip_10","precip_11","precip_12")
 
 ai1996<-aridityIndexThornthwaite(pp1996, pet1996, precipScale = 1)
-plot(ai1996)
+# plot(ai1996)
 
 ## Data extraction -------------------
 # Re project DataMp_sf

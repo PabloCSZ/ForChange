@@ -24,7 +24,7 @@ utm_shape_f <- utm_shape %>%
   filter(ZONE == "29") %>%
   filter(ROW_ == "S" | ROW_ == "T") %>%
   group_by(ZONE) %>%
-  summarise()
+  dplyr::summarise()
 # Spatial operation 
 # National cartographic sheets within the 29 UTM zone
 touch <- st_contains(utm_shape_f, pm_shape)
@@ -33,11 +33,7 @@ pm_shape_29 <-  st_drop_geometry(pm_shape_29)
 
 # National topographic sheets that intersect with UTM line
 #2930_o
-utm_shape_f <- utm_shape %>%
-  filter(ZONE == "29") %>%
-  filter(ROW_ == "S" | ROW_ == "T") %>%
-  group_by(ZONE) %>%
-  summarise()
+
 # Spatial operation 
 # National cartographic sheets that touch but no contain the 29 UTM zone
 touch <- st_overlaps(utm_shape_f, pm_shape) 
@@ -49,7 +45,7 @@ utm_shape_f <- utm_shape %>%
   filter(ZONE == "30") %>%
   filter(ROW_ == "S" | ROW_ == "T") %>%
   group_by(ZONE) %>%
-  summarise()
+  dplyr::summarise()
 # Spatial operation 
 # National cartographic sheets within the 29 UTM zone
 touch <- st_contains(utm_shape_f, pm_shape)
@@ -98,6 +94,7 @@ DataMp_sf_29 <- st_transform(DataMp_sf_29,4258)
 DataMp_sf_30 <- st_transform(DataMp_sf_30,4258)
 # Binding both dataframes
 DataMp_sf <- do.call(rbind,list(DataMp_sf_29, DataMp_sf_30))
+st_geometry(DataMp_sf)
 
 # mapview(DataMp_sf)
 #st_write(DataMp_sf, "Andalucia.shp")
