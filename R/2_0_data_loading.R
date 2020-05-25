@@ -5,7 +5,7 @@
 # Spanish National forest inventory
 # Donwloaded from "https://www.miteco.gob.es/es/biodiversidad/servicios/banco-datos-naturaleza/informacion-disponible/ifn3_bbdd_descargas.htm.aspx" in .amd format
 # converted to excel file in Excel 32 bits
-# Only Andalucia province are included
+# Only Andalucia providances are included
 
 ## Function to load multiple sheets ----------------
 read_excel_allsheets <- function(filename, tibble = FALSE) {

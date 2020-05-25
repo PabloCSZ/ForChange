@@ -10,7 +10,7 @@
 # TreesI3 from "2_0_data_loading.R" is required
 # TreesI2 from "2_0_data_loading.R" is required
 # allo from "5_0_PCMayores.R" is required
-# DataMp_sf from 3_0_data_projection.R is required
+# DataMp_sf from 4_0_climate_data.R is required (which comes from 3_0_data_projection.R)
 
 # cleaning data from TreesI3 before join with TreesI2--------------
 
@@ -108,8 +108,8 @@ t3t2_allo <- t3t2_allo %>%
   filter(state == "V")
 #areal biomass
 t3t2_allo <- t3t2_allo %>%
-  mutate(Biomass_3 = CFA*(Dn_3/10)^b, # Biomass in kg per tree
-         Biomass_2 = CFA*(Dn_2/10)^b)
+  mutate(ABiomass_3 = CFA*(Dn_3/10)^b, # Biomass in kg per tree
+         ABiomass_2 = CFA*(Dn_2/10)^b)
 
 #Root biomass
 t3t2_allo <- t3t2_allo %>%
@@ -118,17 +118,17 @@ t3t2_allo <- t3t2_allo %>%
 
 ## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(B3_Mgha = Biomass_3/(0.000314159265*area_3^2)/1000, # Biomass T3
-         B2_Mgha = Biomass_2/(0.000314159265*area_2^2)/1000, # Biomass T2
-         R3_Mgha = RBiomass_3/(0.000314159265*area_3^2)/1000, # Biomass R3
-         R2_Mgha = RBiomass_2/(0.000314159265*area_2^2)/1000) # Biomass R2
+  mutate(AB3_Mgha = ABiomass_3/(0.000314159265*area_3^2)/1000, # Biomass T3
+         AB2_Mgha = ABiomass_2/(0.000314159265*area_2^2)/1000, # Biomass T2
+         RB3_Mgha = RBiomass_3/(0.000314159265*area_3^2)/1000, # Biomass R3
+         RB2_Mgha = RBiomass_2/(0.000314159265*area_2^2)/1000) # Biomass R2
 
 ## calculation RGR between T3 and T2 -----------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(B_RGR = (Biomass_3 - Biomass_2)/difyear, # Plant Biomass
-         R_RGR = (RBiomass_3 - RBiomass_2)/difyear, # in Kg
-         B_RGR_Mgha = (B3_Mgha - B2_Mgha)/difyear,
-         R_RGR_MgHa = (R3_Mgha - R2_Mgha)/difyear)# Root Biomass 
+  mutate(A_RGR = (log(ABiomass_3) - log(ABiomass_2))/(difyear*1000), # RGR
+         R_RGR = (log(RBiomass_3) - log(RBiomass_2))/(difyear*1000), # in Mg
+         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear,
+         R_BP_MgHa = (RB3_Mgha - RB2_Mgha)/difyear)# Root Biomass 
 
 
 #filter(B_RGR > 0 & B_RGR < 100) # a filter to avoid negative growth and too high values       

@@ -28,7 +28,7 @@ allo2$Ecuacion <- NULL
 allo2$COD_SPP_IFN3 <- str_pad(allo2$COD_SPP_IFN3, 3, pad = "0")
 
 allo <- rbind.fill(allo,allo2)
-allo <- allo[1:102,]
+allo <- allo[1:102,] # the last 9 species dont have an equation yet
 
 #Merging TreesI3 with the BEM equations to calculate tree biomass
 TreesI3_allo <- merge(TreesI3, allo, by.x = "Especie", by.y = "COD_SPP_IFN3", all.x = TRUE)
