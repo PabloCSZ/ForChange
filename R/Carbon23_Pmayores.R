@@ -21,9 +21,9 @@ allo <- read.table(file="data/dove/Allometric.txt", header = TRUE, sep = "\t",
 
 summary(tree3$Provincia3)
 tree3 <- tree3 %>%
-  filter(Provincia3 %in% c("4", "11", "14", "18", "21", "23", "29", "41"))
+  filter(Provincia3 %in% c("11", "14", "27",  "32", "41", "45", "49"))
 tree2 <- tree2 %>%
-  filter(Provincia2 %in% c("4", "11", "14", "18", "21", "23", "29", "41"))
+  filter(Provincia2 %in% c("11", "14", "27",  "32", "41", "45", "49"))
 ####1. Selección parcelas permanentes: clases A1 y A3C####
 tree3 <- tree3[tree3$Cla3 == 'A' & tree3$Subclase3 %in% c('1',"3C"),]
 
@@ -212,6 +212,9 @@ treefinal32 <- treetot[,c("ID_Pma3","ID_Pma3c","ID_Pma2","IDPC3","IDPCc3","Plotc
                           "VCCha3","VCCha2","VSCha3","VSCha2","IAVCha3","IAVCha2",
                           "VLEha3","VLEha2","Error32","Error3","Error2")]
 
+treefinal32 %>%
+  filter(Plotcode3 == "110085")
+
 #summary(treefinal32$distancia32)
 #hay algunos errores en distancia que no he quitado
 #kk<- subset(treefinal32,distancia32 > 25)
@@ -234,17 +237,25 @@ pplot32 <- merge(plot3, plot2, by.x = "Plotcode3", by.y = "Plotcode")
 names(pplot32)
 
 pplot32$year32 <- pplot32$year3 - pplot32$year2
+
+pplot32 <- pplot32 %>%
+  filter(Provincia3 %in% c("11", "14", "27", "32", "41", "45", "49"))
 summary(pplot32$year32)
 summary(pplot32$Dif23.x)
 pplot32$year32[pplot32$year32 < 6] <- pplot32$Dif23.x[pplot32$year32 < 6]
 
-plot32 <- pplot32[,c("IDPC3","Plotcode3","CXed50","CYed50","year2","year3",
-                     "date2","date3","year32")]
+plot32 <- pplot32[,c("Plotcode3", "Provincia3","Estadillo3","year2","year3",
+                     "Dif23.x","year32")]
+
+#write.csv(plot32, "data/dove/year_data2.csv")
 
 #estaria bien meter el numero de arboles con error respecto al total: 
 #esto depende del estudio, pero se podría agregar aqui por tipo de error.
 #revisar VCA: da errores y muchos NAs porque hay NAs en dbh y calculos asociados
 #en vez de 0!!
+
+treefinal32 <- treefinal32 %>%
+  filter(Especie3 == "045")
 
 tplot32 <- ddply(treefinal32,.(IDPC3),summarize,
                  Plotcode3 = mean(Plotcode3),
@@ -263,9 +274,30 @@ tplot32 <- ddply(treefinal32,.(IDPC3),summarize,
                  mdbh3 = mean(dbh3, na.rm = TRUE),mdbh2 = mean(dbh2, na.rm = TRUE),
                  sddbh3 = sd(dbh3, na.rm = TRUE),sddbh2 = sd(dbh2, na.rm = TRUE))
 
+tplot32 <- treefinal32 %>%
+  group_by(Plotcode3) %>%
+  summarize(ba_ha2 = sum(AB2m2ha, na.rm = TRUE),ba_ha3 = sum(AB3m2ha, na.rm = TRUE),
+                 dens2 = sum(dens2, na.rm = TRUE),dens3 = sum(dens3, na.rm = TRUE),
+                 VCC2 = sum(VCCha2, na.rm = TRUE),VCC3 = sum(VCCha3, na.rm = TRUE),
+                 VSC2 = sum(VSCha2, na.rm = TRUE),VSC3 = sum(VSCha3, na.rm = TRUE),
+                 BA_Mgha2 = sum(BA2_Mgha, na.rm = TRUE),BR_Mgha2 = sum(BR2_Mgha, na.rm = TRUE),
+                 CA_Mgha2 = sum(CA2_Mgha, na.rm = TRUE),CR_Mgha2 = sum(CR2_Mgha, na.rm = TRUE),
+                 BA_Mgha3 = sum(BA3_Mgha, na.rm = TRUE),BR_Mgha3 = sum(BR3_Mgha, na.rm = TRUE),
+                 CA_Mgha3 = sum(CA3_Mgha, na.rm = TRUE),CR_Mgha3 = sum(CR3_Mgha, na.rm = TRUE),
+                 BA32vivo = sum(BA32ha, na.rm = TRUE), BR32vivo = sum(BR32ha, na.rm = TRUE),
+                 AB32vivo = sum(AB32ha, na.rm = TRUE), AB2muertosc = sum(AB2m2ha_muertosc, na.rm = TRUE),
+                 AB2muertopresente = sum(AB2m2ha_presente, na.rm = TRUE), AB2muertoausente = sum(AB2m2ha_ausente, na.rm = TRUE),
+                 ABreclutado32 = sum(reclutamiento32, na.rm = TRUE),
+                 mdbh3 = mean(dbh3, na.rm = TRUE),mdbh2 = mean(dbh2, na.rm = TRUE),
+                 sddbh3 = sd(dbh3, na.rm = TRUE),sddbh2 = sd(dbh2, na.rm = TRUE))
+
+tplot32 %>%
+  filter(Plotcode3 == "110085")
 
 fplot32 <- merge(tplot32, plot32, by.x = c("Plotcode3"), by.y = c("Plotcode3"), all.x = TRUE) ### Uno la table de parcelas de campo con la total mediante plotcode para parcelas de campo y ID_PC (que es un campo unico) para la tabla total
 
+fplot32 <- fplot32 %>%
+  mutate(Plotcode3_3 = str_c(Provincia3, Estadillo3, collapse = NULL))
 ##Calculamos la productividad ####
 fplot32$CA32 <- ((fplot32$CA_Mgha3)  - (fplot32$CA_Mgha2) ) / (fplot32$year32)
 fplot32$CR32 <- ((fplot32$CR_Mgha3)  - (fplot32$CR_Mgha2) ) / (fplot32$year32)                        
@@ -280,10 +312,60 @@ fplot32$AB32 <- (((plotfin$ba_ha3) - (plotfin$ba_ha2))) / (plotfin$year32)
 fplot32$AB32vivo <- plotfin$AB32vivo / plotfin$year32
 fplot32$BA32vivo <- plotfin$BA32vivo / plotfin$year32
 fplot32$BR32vivo <- plotfin$BR32vivo / plotfin$year32
-names(fplot32)
-  
+
 ##Antes de exportar se podrían eliminar parcelas con errores
 ##como no tener ecuaciones alométricas, etc. Calculando el % AB respecto al total
 
 ##escribimos el archivo final####
-write_csv(fplot32, "4results\\20200411_plot23_biomass.csv", col_names = TRUE)
+#write_csv(fplot32, "4results\\20200411_plot23_biomass.csv", col_names = TRUE)
+
+# Filtering the 30 plots --------------------
+leaf_n <- read_excel("data/new_data/leaf_n.xlsx")
+leaf_n$Provincia <- str_sub(leaf_n$Parcela, start = 1, end = 2)
+leaf_n$Parcela <- str_sub(leaf_n$Parcela, start = -4)
+colnames(leaf_n)[1] <- "Estadillo" # changing names for the merge
+colnames(leaf_n)[4:12] <- c("P", "K", "Na", "Mg", "Ca", "Cu", "Zn", "Mn", "Fe")
+
+# selecting the 30 plots from leaf data 2018 in the IFN
+
+l <- leaf_n %>%
+  group_by(Provincia, Estadillo) %>%
+  summarize (n = n())
+
+# grouping fplot32 at plot level
+
+fplot32$Estadillo3 <- str_pad(fplot32$Estadillo3, 4, pad = "0")
+fplot32_p <- fplot32 %>%
+  group_by(Provincia3, Estadillo3) %>%
+  summarise_at(vars(ba_ha2:sddbh2,CA32:BR32), sum)
+fplot32_p$Provincia3 <- as.character(fplot32_p$Provincia3)
+
+l <- left_join(l,fplot32_p, by = c("Provincia" = "Provincia3", "Estadillo" = "Estadillo3"))
+
+# Mixing my plot30 file with Dove file
+l <- l %>%
+  mutate(Provincia3 = str_replace_all(Provincia, c("11" = "Cadiz", "14" = "Cordoba", "27" = "Lugo",
+                                                   "32" = "Ourense", "41" = "Sevilla", "45" = "Toledo",
+                                                   "49" = "Zamora")))
+
+l3 <- left_join(l, l2, by = c("Provincia3" = "Provincia", "Estadillo"))
+
+cor(l3$AB3_Mgha, l3$BA_Mgha3, use = "complete.obs")
+cor(l3$B_BP_Mgha, l3$BA32, use = "complete.obs")
+
+a <- ggplot(data = l3)+
+  geom_point(aes(x = AB3_Mgha, y = BA_Mgha3))+
+  theme_bw() +
+  labs(x = "Pablo Biomass (Mg Ha-1)", y = "Paloma Biomass (Mg ha-1)", title = "Quercus biomass at plot level")
+
+b<- ggplot(data = l3)+
+  geom_point(aes(x = B_BP_Mgha, y = BA32vivo))+
+  theme_bw() +
+  labs(x = "Pablo Biomass (Mg Ha-1 year-1)", y = "Paloma Biomass (kg ha-1 year-1)",
+       title = "Quercus biomass production at plot level")
+
+
+
+tiff("products/compare.tiff", width = 12, height = 4.5, units = 'in', res = 300, compression = 'lzw')
+ggarrange(a,b, ncol = 2)
+dev.off()

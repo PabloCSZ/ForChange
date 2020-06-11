@@ -29,3 +29,5 @@ library(envirem)
 # To create graphical display of spatial data
 library(mapview)
 library(tmap)
+library(ggplot2)
+library(ggpubr)

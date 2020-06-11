@@ -9,7 +9,6 @@
 # DataMp_sf from "4_0_climate_data.R" is required
 # TreesI3 from "2_0_data_loading.R" is required
 
-
 #  Calculate BEMs --------------
 
 allo <- read_delim("data/Allom/Allometric.txt", ## Paloma sheet with species paramenters

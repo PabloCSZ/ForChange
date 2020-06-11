@@ -21,7 +21,7 @@ read_excel_allsheets <- function(filename, tibble = FALSE) {
 
 ## Data loading ------------
 
-L <- list.files(path= "data/ifn_data", pattern= ".xlsx", full.names = TRUE)
+L <- list.files(path= "data/ifn_data", pattern= "A.xlsx", full.names = TRUE)
 
 Cdb <- lapply(L, function(x) read_excel_allsheets(x))
 

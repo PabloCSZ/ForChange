@@ -118,15 +118,15 @@ t3t2_allo <- t3t2_allo %>%
 
 ## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(AB3_Mgha = ABiomass_3/(0.000314159265*area_3^2)/1000, # Biomass T3
+  mutate(AB3_Mgha = ABiomass_3/(0.000314159265*area_3^2)/1000, # Biomass T3 in Mg per ha
          AB2_Mgha = ABiomass_2/(0.000314159265*area_2^2)/1000, # Biomass T2
          RB3_Mgha = RBiomass_3/(0.000314159265*area_3^2)/1000, # Biomass R3
          RB2_Mgha = RBiomass_2/(0.000314159265*area_2^2)/1000) # Biomass R2
 
 ## calculation RGR between T3 and T2 -----------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(A_RGR = (log(ABiomass_3) - log(ABiomass_2))/(difyear*1000), # RGR
-         R_RGR = (log(RBiomass_3) - log(RBiomass_2))/(difyear*1000), # in Mg
+  mutate(A_RGR = (log(ABiomass_3)/log(ABiomass_2))/(difyear*1000), # RGR
+         R_RGR = (log(RBiomass_3)/log(RBiomass_2))/(difyear*1000), # in Mg per year
          B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear,
          R_BP_MgHa = (RB3_Mgha - RB2_Mgha)/difyear)# Root Biomass 
 
@@ -137,7 +137,30 @@ t3t2_allo <- t3t2_allo %>%
 
 ## adding spatial coordinates for climate data ------------
 colnames(t3t2_allo)[2:3] <- c("Provincia", "Estadillo")
-t3t2_allo <- left_join(t3t2_allo, DataMp_sf[,c(3:5,11,12,14:34)], by = c("Provincia", "Estadillo"))
+t3t2_allo <- t3t2_allo %>% ## Filtering unnecesarry data at the moment 
+  dplyr::select(-Cla_3:-Compara_3, -Provincia_2:-ParamEsp_2, -Correspondencia:-CFAr,
+                -RBiomass_3, -RBiomass_2, -RB3_Mgha, -RB2_Mgha, -R_RGR, -R_BP_MgHa)
+
+t3t2_allo2 <- left_join(t3t2_allo, DataMp_sf[,c(3:5,11,12,14:34)], by = c("Provincia", "Estadillo"))
+
 # print results
 
-write.csv(t3t2_allo, "products/RGR_per_tree.csv")
+write.csv(t3t2_allo2, "products/Andalucia.csv")
+
+## Summary tables with plot data ----------
+
+Plot_a <- t3t2_allo %>%
+  drop_na(ABiomass_3) %>%
+  group_by(Provincia, Estadillo, Sp, area_2) %>%
+  summarise_at(vars(ABiomass_3:B_BP_Mgha), sum) %>%
+  mutate(N_Trees = n()) %>%
+  mutate(Tree_dens = N_Trees/area_2) %>%
+  group_by(Provincia, Estadillo, Sp) %>%
+  summarise_at(vars(ABiomass_3:Tree_dens), sum) %>% #Table with N trees by Provincia, estadillo and Sp 
+  group_by(Provincia, Estadillo) %>%
+  top_n(1,Tree_dens) # Data is filtered so only Biomass and production of the main species is shown.
+# Other option is to calculted the most common specie and add it to the total biomass in the plot (with more than 1 sp or not).
+
+Plot_a <- left_join(Plot_a, DataMp_sf[,c(3:5,11,12,14:34)], by = c("Provincia", "Estadillo"))
+
+write.csv(Plot_a, "products/Andalucia_plot.csv")

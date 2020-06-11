@@ -96,5 +96,5 @@ DataMp_sf_30 <- st_transform(DataMp_sf_30,4258)
 DataMp_sf <- do.call(rbind,list(DataMp_sf_29, DataMp_sf_30))
 st_geometry(DataMp_sf)
 
-# mapview(DataMp_sf)
+#mapview(DataMp_sf)
 #st_write(DataMp_sf, "Andalucia.shp")
