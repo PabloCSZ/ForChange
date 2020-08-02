@@ -12,6 +12,7 @@ library(readxl)
 library(data.table)
 library(xlsx)
 library(rJava)
+library(devtools)
 
 ## for data processing
 library(stringr)
@@ -29,5 +30,17 @@ library(envirem)
 # To create graphical display of spatial data
 library(mapview)
 library(tmap)
+
+
 library(ggplot2)
 library(ggpubr)
+library(visreg)
+library(RColorBrewer)
+
+# For data analysis
+
+library(corrplot)
+library(mgcv)
+library(lavaan) ## To run the sem function
+library(semPlot) ## To do the SEM plot
+library(semTools)

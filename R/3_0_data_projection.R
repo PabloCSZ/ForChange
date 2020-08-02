@@ -89,7 +89,7 @@ DataMp_sp_30 <- SpatialPointsDataFrame(DataMp_sp_30,DataMp_30, coords.nrs = c(11
 # converting to sf object
 DataMp_sf_30 <- st_as_sf(DataMp_sp_30)
 
-# Project both dataframes from UTM to longlat
+# Project both dataframes from UTM to longlat (ETRS89)
 DataMp_sf_29 <- st_transform(DataMp_sf_29,4258)
 DataMp_sf_30 <- st_transform(DataMp_sf_30,4258)
 # Binding both dataframes

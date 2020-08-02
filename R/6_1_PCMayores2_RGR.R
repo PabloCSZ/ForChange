@@ -97,6 +97,17 @@ year_data <- year_data %>%
   mutate(Provincia_3 = Provincia3) %>%
   mutate(Estadillo_3 = str_pad(Estadillo3, 4, pad = "0")) %>%
   mutate(difyear = year32)
+
+Fechas <- year_data %>%
+  group_by(Provincia_3, year2) %>%
+  summarise(n())
+
+Fechas <- year_data %>%
+  group_by(Provincia_3) %>%
+  summarise(year2 = mean(year2), year3 = mean(year3))%>%
+  filter(!Provincia_3 %in% c("Zamora" , "Ourense", "Toledo", "Lugo"))
+  
+write.csv(Fechas, "products/fechas.csv")
   
 T3T2 <- merge(T3T2, year_data[,c(8:10)], by = c("Provincia_3", "Estadillo_3"), all.x = TRUE)
 
@@ -121,21 +132,27 @@ t3t2_allo <- t3t2_allo %>%
 
 ## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(AB3_Mgha = AB3_kgT/(0.000314159265*area_3^2)/1000, # Biomass T3 in Mg per ha
+  mutate(AB3_Mgha = AB3_kgT/(0.000314159265*area_2^2)/1000, # Biomass T3 in Mg per ha
          AB2_Mgha = AB2_kgT/(0.000314159265*area_2^2)/1000, # Biomass T2
-         RB3_Mgha = RB3_kgT/(0.000314159265*area_3^2)/1000, # Biomass R3
+         RB3_Mgha = RB3_kgT/(0.000314159265*area_2^2)/1000, # Biomass R3
          RB2_Mgha = RB2_kgT/(0.000314159265*area_2^2)/1000) # Biomass R2
+
+# There are several ways to to calculate the previous variables. Intuitively, it make sense to calculcate the areal biomass from the IFN3 using "area_3" because it woukd provide an accurate 
+# representation of the biomass per area in that moment. However, in our case is more important to make an accurate comparisson with the IFN2. Therefore, we need to use "area_2" in all equation.
+# At the end, we are not really calculating the biomass per area in the IFN3. We are calculation how much biomass there is in the trees from the IFN2 that are still alive in the IFN3. 
 
 ## calculation RGR between T3 and T2 -----------------
 t3t2_allo <- t3t2_allo %>%
   mutate(A_RGR = (log(AB3_kgT)/log(AB2_kgT))/(difyear*1000), # RGR
          R_RGR = (log(RB3_kgT)/log(RB2_kgT))/(difyear*1000), # in Mg per year
-         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear,
+         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear, # Biomass production
          R_BP_MgHa = (RB3_Mgha - RB2_Mgha)/difyear)# Root Biomass 
 
 
 #filter(B_RGR > 0 & B_RGR < 100) # a filter to avoid negative growth and too high values       
 # This is going to be need it according to the variable you are measuring.
+
+#write.csv(t3t2_allo, "products/plots30.csv")
 
 ## Summary tables before any future addition to the field data ----------
 
@@ -153,68 +170,15 @@ Plot30_p <- Plot30 %>%
   summarise(N_Trees = sum(N_Trees), Tree_dens = sum(Tree_dens))
 
 Plot30_sp <- Plot30 %>%
-  drop_na(AB3_kgT) %>%
+  tidyr::drop_na(AB3_kgT) %>%
   group_by(Provincia_3, Estadillo_3,Sp) %>%
-  summarise_at(vars(AB3_kgT:B_BP_Mgha), sum) #Table with N trees by Provincia, estadillo and Sp 
+  summarise(AB3_kgT = sum(AB3_kgT), AB2kgT = sum(AB2_kgT), AB3_Mgha = sum(AB3_Mgha), AB2_Mgha = sum(AB2_Mgha), A_RGR = mean(A_RGR),
+            B_BP_Mgha = sum(B_BP_Mgha), difyear = mean(difyear)) %>% #Table with N trees by Provincia, estadillo and Sp 
+  mutate(S_RGR = log(AB3_Mgha)/log(AB2_Mgha)/difyear) # another RGR for plot level Mg per ha per year? 
   
 Plot30_sp <- left_join(Plot30_sp, Plot30_p, by = c("Provincia_3", "Estadillo_3"))
 
-
-## leaf data from 2018 ---------
-leaf_n <- read_excel("data/new_data/leaf_n.xlsx")
-leaf_n$Parcela <- str_sub(leaf_n$Parcela, start = -4)
-colnames(leaf_n)[1] <- "Estadillo" # changing names for the merge
-colnames(leaf_n)[4:12] <- c("P", "K", "Na", "Mg", "Ca", "Cu", "Zn", "Mn", "Fe")
-
-# selecting the 30 plots from leaf data 2018 in the IFN
-
-l <- leaf_n %>%
-  group_by(Provincia, Estadillo) %>%
-  summarize (n = n())
-
-l <- left_join(l,Plot30_sp, by = c("Provincia" = "Provincia_3", "Estadillo" = "Estadillo_3"))
-
-T3T2 %>% # you can see here that this plot doesnt have any comparable tree. only 1 in the IFN3
-  filter(Provincia_3 == "Lugo", Estadillo_3 == "2850")
-
-l <- l %>%
-  filter(Sp == "Quercus ilex")
-
-## adding spatial coordinates for climate data ------------
-colnames(l)[1:2] <- c("Provincia", "Estadillo")
-l2 <- left_join(l, DataMp_sf[,c(3:4,11,12,14:34)], by = c("Provincia", "Estadillo"))
-l2 <- l2 %>%
-  dplyr::select(-n,-geometry)
-  
-write.csv(l2,"products/plot30.csv")
-
-## Functional trait data from 2018 --------------
-Muestreo_18 <- read_excel("data/new_data/Muestreo_18.xlsx", 
-                          sheet = "Arbolado", col_types = c("text", 
-                                                            "numeric", "numeric", "text", "numeric", 
-                                                            "text", "numeric", "text", "numeric", 
-                                                            "numeric", "numeric", "numeric", 
-                                                            "text", "numeric", "numeric", "numeric", 
-                                                            "numeric", "numeric", "numeric", 
-                                                            "numeric", "numeric", "numeric", 
-                                                            "numeric", "numeric", "numeric", 
-                                                            "text"))
-
-Muestreo_18$Provincia <- stringi::stri_trans_general(Muestreo_18$Provincia, "Latin-ASCII") # removing accents for the merge
-Muestreo_18$Parcela <- str_sub(Muestreo_18$Parcela, start = -4)
-names(Muestreo_18)
-summary(as.factor(Muestreo_18$OrdenIf3))
-colnames(Muestreo_18)[2:22] <- c("Estadillo", "nArbol_3", "OrdenIf3", "A3", "OrdenIf4", "A4",
-                                 "Sp_m", "per_ifn", "Ht_ifn","Per", "Ht", "def", "LTy", "LMAy",
-                                 "LDy", "LAy", "LTo", "LMAo", "LDo", "LAo", "WDMCo")
-Muestreo_18 <- Muestreo_18 %>%
-  dplyr::select(-A3, -OrdenIf4, -A4) %>%
-  mutate(Dn_m = Per/3.1416*10) %>%  # Now diameter is in mm like in the IFN 
-  filter(Sp_m == "Quercus ilex") %>%
-  filter(!OrdenIf3 == "Nuevo", !OrdenIf3 == "Muerto")
-
-
-## merging T3_A and functional traits ------
+## merging T3_A and functional traits ------ # This part is not ready yet
 
 T3_A2 <- leaft_join(T3_A, Muestreo_18, by = c("Provincia_3" = "Provincia", "Estadillo_3" = "Estadillo", "OrdenIf3_3" = "OrdenIf3"))
 leaf_n <- leaf_n %>% 
@@ -251,4 +215,5 @@ t3t2_test <- t3t2_test %>%
 
 # print results
 
-#write.csv(t3t2_allo, "products/plots30.csv")
+
+
