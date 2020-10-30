@@ -40,8 +40,10 @@ for(i in 1:nrow(T3T2)){
     T3T2$specie[i] <- T3T2$Especie_3[i]
 } ## Now there is no zero in specie
 
-
 ## Creating an "state" variable based on OrdenIf3 and OrdenIf2 and Dove documents
+
+T3T2 <- T3T2 %>% filter(!is.na(OrdenIf2_3), !is.na(OrdenIf3_3))
+# the If loop can not work if there is an NA inside the data. 
 
 #First, we need to delete that one OrdenIf2= 888 that we dont need either way.
 
@@ -95,12 +97,12 @@ year_data <- year_data %>%
   mutate(Estadillo_3 = str_pad(Estadillo3, 4, pad = "0")) %>%
   mutate(difyear = year32)
   
-T3T2 <- merge(T3T2, year_data[,c(8:10)], by = c("Provincia_3", "Estadillo_3"), all.x = TRUE)
+T3T2 <- merge(T3T2, year_data[,c(4,5,8:10)], by = c("Provincia_3", "Estadillo_3"), all.x = TRUE)
 
 ## Merging T3T2 with allo -------
 t3t2_allo <- merge(T3T2, allo, by.x = "specie", by.y = "COD_SPP_IFN3", all.x = TRUE)
 
-## calculating Biomass for T3 and T2 ----------
+## calculating Biomass for  Alive trees in both T3 and T2 ----------
 
 # First step, exclude trees based on "state"
 
@@ -108,28 +110,31 @@ t3t2_allo <- t3t2_allo %>%
   filter(state == "V")
 #areal biomass
 t3t2_allo <- t3t2_allo %>%
-  mutate(ABiomass_3 = CFA*(Dn_3/10)^b, # Biomass in kg per tree
-         ABiomass_2 = CFA*(Dn_2/10)^b)
+  mutate(AB3_kgT = CFA*(Dn_3/10)^b, # Biomass in kg per tree
+         AB2_kgT = CFA*(Dn_2/10)^b)
 
 #Root biomass
 t3t2_allo <- t3t2_allo %>%
-  mutate(RBiomass_3 = CFAr*(Dn_3/10)^br, # Biomass in kg per tree
-         RBiomass_2 = CFAr*(Dn_2/10)^br)
+  mutate(RB3_kgT = CFAr*(Dn_3/10)^br, # Biomass in kg per tree
+         RB2_kgT = CFAr*(Dn_2/10)^br)
 
 ## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(AB3_Mgha = ABiomass_3/(0.000314159265*area_3^2)/1000, # Biomass T3 in Mg per ha
-         AB2_Mgha = ABiomass_2/(0.000314159265*area_2^2)/1000, # Biomass T2
-         RB3_Mgha = RBiomass_3/(0.000314159265*area_3^2)/1000, # Biomass R3
-         RB2_Mgha = RBiomass_2/(0.000314159265*area_2^2)/1000) # Biomass R2
+  mutate(AB3_Mgha = AB3_kgT/(0.000314159265*area_2^2)/1000, # Biomass T3 in Mg per ha
+         AB2_Mgha = AB2_kgT/(0.000314159265*area_2^2)/1000, # Biomass T2
+         RB3_Mgha = RB3_kgT/(0.000314159265*area_2^2)/1000, # Biomass R3
+         RB2_Mgha = RB2_kgT/(0.000314159265*area_2^2)/1000) # Biomass R2
+
+# There are several ways to to calculate the previous variables. Intuitively, it make sense to calculcate the areal biomass from the IFN3 using "area_3" because it woukd provide an accurate 
+# representation of the biomass per area in that moment. However, in our case is more important to make an accurate comparisson with the IFN2. Therefore, we need to use "area_2" in all equation.
+# At the end, we are not really calculating the biomass per area in the IFN3. We are calculation how much biomass there is in the trees from the IFN2 that are still alive in the IFN3. 
 
 ## calculation RGR between T3 and T2 -----------------
 t3t2_allo <- t3t2_allo %>%
-  mutate(A_RGR = (log(ABiomass_3)/log(ABiomass_2))/(difyear*1000), # RGR
-         R_RGR = (log(RBiomass_3)/log(RBiomass_2))/(difyear*1000), # in Mg per year
-         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear,
+  mutate(A_RGR = (log(AB3_kgT)-log(AB2_kgT))*1000/(difyear), # RGR
+         R_RGR = (log(RB3_kgT)-log(RB2_kgT))*1000/(difyear), # in Mg per year
+         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear, # Biomass production
          R_BP_MgHa = (RB3_Mgha - RB2_Mgha)/difyear)# Root Biomass 
-
 
 #filter(B_RGR > 0 & B_RGR < 100) # a filter to avoid negative growth and too high values       
 # This is going to be need it according to the variable you are measuring.
@@ -139,28 +144,137 @@ t3t2_allo <- t3t2_allo %>%
 colnames(t3t2_allo)[2:3] <- c("Provincia", "Estadillo")
 t3t2_allo <- t3t2_allo %>% ## Filtering unnecesarry data at the moment 
   dplyr::select(-Cla_3:-Compara_3, -Provincia_2:-ParamEsp_2, -Correspondencia:-CFAr,
-                -RBiomass_3, -RBiomass_2, -RB3_Mgha, -RB2_Mgha, -R_RGR, -R_BP_MgHa)
+                -RB3_kgT, -RB2_kgT, -RB3_Mgha, -RB2_Mgha, -R_RGR, -R_BP_MgHa)
 
 t3t2_allo2 <- left_join(t3t2_allo, DataMp_sf[,c(3:5,11,12,14:34)], by = c("Provincia", "Estadillo"))
 
 # print results
 
-write.csv(t3t2_allo2, "products/Andalucia.csv")
+#write.csv(t3t2_allo2, "products/Andalucia.csv")
 
 ## Summary tables with plot data ----------
 
 Plot_a <- t3t2_allo %>%
-  drop_na(ABiomass_3) %>%
-  group_by(Provincia, Estadillo, Sp, area_2) %>%
-  summarise_at(vars(ABiomass_3:B_BP_Mgha), sum) %>%
-  mutate(N_Trees = n()) %>%
+  drop_na(AB3_kgT) %>%
+  filter(Sp == "Quercus ilex") %>%
+  group_by(Provincia, Estadillo, area_2) %>%
+  summarise(AB3_kgT = mean(AB3_kgT), AB2_kgT = mean(AB2_kgT), AB3_Mgha = sum(AB3_Mgha), AB2_Mgha = sum(AB2_Mgha), A_RGR = mean(A_RGR),
+            B_BP_Mgha = sum(B_BP_Mgha), difyear = mean(difyear), N_Trees = n()) %>%
   mutate(Tree_dens = N_Trees/area_2) %>%
-  group_by(Provincia, Estadillo, Sp) %>%
-  summarise_at(vars(ABiomass_3:Tree_dens), sum) %>% #Table with N trees by Provincia, estadillo and Sp 
   group_by(Provincia, Estadillo) %>%
-  top_n(1,Tree_dens) # Data is filtered so only Biomass and production of the main species is shown.
+  summarise(AB3_kgT = mean(AB3_kgT), AB2_kgT = mean(AB2_kgT), AB3_Mgha = sum(AB3_Mgha), AB2_Mgha = sum(AB2_Mgha), A_RGR = mean(A_RGR),
+            B_BP_Mgha = sum(B_BP_Mgha), difyear = mean(difyear), Tree_dens = sum(Tree_dens)) #Table with N trees by Provincia, estadillo and Sp 
+  
 # Other option is to calculted the most common specie and add it to the total biomass in the plot (with more than 1 sp or not).
 
-Plot_a <- left_join(Plot_a, DataMp_sf[,c(3:5,11,12,14:34)], by = c("Provincia", "Estadillo"))
+Plot_a <- left_join(Plot_a, DataMp_sf[,c(3:5,11,12,14:34)], by = c("Provincia", "Estadillo")) 
+Plot_a <- Plot_a[!duplicated(Plot_a[,1:2]),] # For some reason that I dont get atm we have duplicates in DataMp_sf. They are harmless, but we have to be aware of them and clean them eventually. 
 
-write.csv(Plot_a, "products/Andalucia_plot.csv")
+#write.csv(Plot_a, "products/Andalucia_plot.csv")
+
+
+## Calculation Biomass for alive trees in both T3 and T2 independently ------------
+
+
+## Merging T3T2 with allo -------
+t3t2_allo <- merge(T3T2, allo, by.x = "specie", by.y = "COD_SPP_IFN3", all.x = TRUE)
+
+## calculating Biomass for  Alive trees in both T3 and T2 ----------
+
+# First step, exclude trees based on "state"
+
+t3t2_allob <- t3t2_allo %>%
+  filter(state %in% c("V", "R", "MP"))
+#areal biomass
+t3t2_allob <- t3t2_allob %>%
+  mutate(AB3_kgT = CFA*(Dn_3/10)^b, # Biomass in kg per tree
+         AB2_kgT = CFA*(Dn_2/10)^b)
+
+#Root biomass
+t3t2_allob <- t3t2_allob %>%
+  mutate(RB3_kgT = CFAr*(Dn_3/10)^br, # Biomass in kg per tree
+         RB2_kgT = CFAr*(Dn_2/10)^br)
+## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
+t3t2_allob <- t3t2_allob %>%
+  mutate(AB3_Mgha = AB3_kgT/(0.000314159265*area_3^2)/1000, # Biomass T3 in Mg per ha
+         AB2_Mgha = AB2_kgT/(0.000314159265*area_2^2)/1000, # Biomass T2
+         RB3_Mgha = RB3_kgT/(0.000314159265*area_3^2)/1000, # Biomass R3
+         RB2_Mgha = RB2_kgT/(0.000314159265*area_2^2)/1000) # Biomass R2
+
+# There are several ways to to calculate the previous variables. Intuitively, it make sense to calculcate the areal biomass from the IFN3 using "area_3" because it woukd provide an accurate 
+# representation of the biomass per area in that moment. However, in our case is more important to make an accurate comparisson with the IFN2. Therefore, we need to use "area_2" in all equation.
+# At the end, we are not really calculating the biomass per area in the IFN3. We are calculation how much biomass there is in the trees from the IFN2 that are still alive in the IFN3. 
+
+
+## calculation RGR between T3 and T2 -----------------
+t3t2_allob <- t3t2_allob %>%
+  mutate(A_RGR = (log(AB3_kgT) - log(AB2_kgT))*1000/(difyear), # RGR
+         R_RGR = (log(RB3_kgT) - log(RB2_kgT))*1000/(difyear), # in Mg per year
+         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear, # Biomass production
+         R_BP_MgHa = (RB3_Mgha - RB2_Mgha)/difyear)# Root Biomass 
+
+
+## Working only to get IFN3 data
+
+T3_allo <- t3t2_allob %>% ## Filtering necesarry data at the moment 
+  dplyr::select(Provincia_3, Estadillo_3, area_3, Sp, AB3_kgT, AB3_Mgha, year3, area_2, AB2_kgT, AB2_Mgha, year2, state) # at tree level
+
+T3_allo_sp <- T3_allo %>%
+  tidyr::drop_na(AB3_kgT) %>%
+  group_by(Provincia_3, Estadillo_3, Sp) %>%
+  summarise(AB3_Mgha_sp = sum(AB3_Mgha)) # a #Table  by Provincia, estadillo and sp
+
+## Data transformation (grouping by Provincia, Estadillo, area and Sp)--------------
+
+T3_allo_p <- T3_allo %>% 
+  tidyr::drop_na(AB3_kgT) %>%
+  group_by(Provincia_3, Estadillo_3, area_3) %>%
+  summarise(N_Trees = n(), AB3_Mgha = sum(AB3_Mgha), year3 = mean(year3))  %>%
+  mutate(Tree_dens = N_Trees/(0.000314159265*area_3^2)) %>% # Tree per ha
+  group_by(Provincia_3, Estadillo_3) %>%
+  summarise(Tree_dens = sum(Tree_dens),AB3_Mgha = sum(AB3_Mgha), year3 = mean(year3)) #Table  by Provincia, estadillo 
+
+T3_allo_p <- left_join(T3_allo_p, T3_allo_sp, by = c("Provincia_3", "Estadillo_3")) # datframe by provincia, estadillo and sp
+T3_allo_p <- T3_allo_p %>%
+  mutate(AB3_Mgha_perc =AB3_Mgha_sp/AB3_Mgha*100) # calculate specie importance for total biomass
+
+T3_allo_p <- T3_allo_p %>%
+  group_by(Provincia_3, Estadillo_3) %>%
+  top_n(1,AB3_Mgha_perc) # filter only the most important sp / dataframe by provincia and estadillo 
+
+
+## Working only to get IFN2 data
+
+T2_allo_sp <- T3_allo %>%
+  tidyr::drop_na(AB2_kgT) %>%
+  group_by(Provincia_3, Estadillo_3, Sp) %>%
+  summarise(AB2_Mgha_sp = sum(AB2_Mgha)) # a #Table  by Provincia, estadillo and sp
+
+## Data transformation (grouping by Provincia, Estadillo, area and Sp)--------------
+
+T2_allo_p <- T3_allo %>% 
+  tidyr::drop_na(AB2_kgT) %>%
+  group_by(Provincia_3, Estadillo_3, area_2) %>%
+  summarise(N_Trees = n(), AB2_Mgha = sum(AB2_Mgha), year2 = mean(year2))  %>%
+  mutate(Tree_dens = N_Trees/(0.000314159265*area_2^2)) %>% # Tree per ha
+  group_by(Provincia_3, Estadillo_3) %>%
+  summarise(Tree_dens2 = sum(Tree_dens),AB2_Mgha = sum(AB2_Mgha), year2 = mean(year2)) #Table  by Provincia, estadillo 
+
+T2_allo_p <- left_join(T2_allo_p, T2_allo_sp, by = c("Provincia_3", "Estadillo_3")) # datframe by provincia, estadillo and sp
+T2_allo_p <- T2_allo_p %>%
+  mutate(AB2_Mgha_perc =AB2_Mgha_sp/AB2_Mgha*100) # calculate specie importance for total biomass
+
+T2_allo_p <- T2_allo_p %>%
+  group_by(Provincia_3, Estadillo_3) %>%
+  top_n(1,AB2_Mgha_perc) # filter only the most important sp / dataframe by provincia and estadillo 
+
+T32_allo <- left_join(T3_allo_p, T2_allo_p, by = c("Provincia_3", "Estadillo_3"))
+T32_allo_sf <- left_join(T32_allo, DataMp_sf[,c(3,4,16,24)], by = c("Provincia_3" = "Provincia", "Estadillo_3" = "Estadillo")) # merge with DataMp_sf to include coordinates
+T32_allo_sf <- st_as_sf(T32_allo_sf)
+
+ T32_allo_sf <- T32_allo_sf %>%
+     filter(!Provincia_3 %in% c("Zamora" , "Ourense", "Toledo", "Lugo"))
+#We shouldn't need the next two lines in the future, so delete them after try it for a second time
+summary(T32_allo_sf)
+T32_allo_sf <- cbind(T32_allo_sf, st_coordinates(T32_allo_sf))
+write.csv(T32_allo_sf, "products/Andalucia_TotalBiomass.csv")

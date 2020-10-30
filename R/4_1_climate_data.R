@@ -10,16 +10,17 @@
 
 ## getting data -----------------
 # Spanish administrative borders
-Spain <- getData("GADM", country = "ESP", level = 2, path = "data")
-
+Spain <- raster::getData("GADM", country = "ESP", level = 1, path = "data")
+Portugal <- raster::getData("GADM", country = "PRT", level = 0, path = "data")
+France <- raster::getData("GADM", country = "FRA", level = 0, path = "data")
 #downloading WorlClim
-climate <-getData(name = "worldclim", var="bio", res = 0.5, lon=-5, lat = 48, path = "data")
+climate <-raster::getData(name = "worldclim", var="bio", res = 0.5, lon=-5, lat = 48, path = "data")
 
-Aridity1 <- climate$bio12_15/(climate$bio1_15+33)
-Aridity2 <- climate$bio12_15/(climate$bio1_15+10)+(((12*climate$bio17_15)/(climate$bio9_15+10))/2)
-Aridity3 <- (100*climate$bio12_15)/(climate$bio10_15*climate$bio10_15-climate$bio11_15*climate$bio11_15)
+Aridity1 <- climate$bio12_15/(climate$bio1_15/10+33) # Köppen 1923
+Aridity2 <- climate$bio12_15/(climate$bio1_15/10+10)+(((12*climate$bio17_15)/(climate$bio9_15/10+10))/2) # Martonne 1926 Dm-2  
+Aridity3 <- (100*climate$bio12_15)/(((climate$bio10_15/10)+273.15)^2-((climate$bio11_15/10)+273.15)^2) # Emberger 1930
 
-# Loading PET and aridity index (cgiarCSI)
+# Loading PET and aridity index (cgiarCSI) - Enrique suggest it
 PET <- raster(file.path("Data/Climate/pet_1_0/PET_he_annual/pet_he_yr"))
 AI <- raster(file.path("Data/Climate/pet_1_0/AI_annual/ai_yr"))
 
@@ -79,12 +80,11 @@ for (m in 1:12){
   pp1996 <- stack(pp1996, file)
 }
 
-# Croping the rasterstacks to Andalucia extent
+# Croping the rasterstacks to Spain extent
 ta1996 <- crop(ta1996, Spain) 
 maxta1996 <- crop(maxta1996, Spain) 
 minta1996 <- crop(minta1996, Spain) 
 pp1996 <- crop(pp1996, Spain) 
-
 
 ## computting Chelsa PET and Aridity ####
 # Below are lines of codes for computting PET at the original resolution, 30-arc second
@@ -112,9 +112,9 @@ DataMp_sf <- st_transform(DataMp_sf,4326)
 #raster extraction
 
 Arid_Koppen <- raster::extract(Aridity1,DataMp_sf)
-Arid_Emberg <- raster::extract(Aridity2,DataMp_sf)
-Arid_Dm <- raster::extract(Aridity3,DataMp_sf)
-MAT <- raster::extract(climate$bio1_15,DataMp_sf)
+Arid_Dm <- raster::extract(Aridity2,DataMp_sf)
+Arid_Emberg <- raster::extract(Aridity3,DataMp_sf)
+MAT <- raster::extract(climate$bio1_15/10,DataMp_sf)
 MAP <- raster::extract(climate$bio12_15,DataMp_sf)
 T_Cold_M <- raster::extract(climate$bio6_15,DataMp_sf)
 PET <- raster::extract(PET,DataMp_sf)

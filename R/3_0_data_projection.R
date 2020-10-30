@@ -47,7 +47,7 @@ utm_shape_f <- utm_shape %>%
   group_by(ZONE) %>%
   dplyr::summarise()
 # Spatial operation 
-# National cartographic sheets within the 29 UTM zone
+# National cartographic sheets within the 30 UTM zone
 touch <- st_contains(utm_shape_f, pm_shape)
 pm_shape_30 <- pm_shape[unlist(touch),] 
 pm_shape_30 <-  st_drop_geometry(pm_shape_30)
@@ -71,7 +71,7 @@ DataMp_29_o$zone <- as.factor(DataMp_29_o$zone)
 # Binding all Data from 29 zone and 29 intersecpt, and two weird plots that should 29 but somehow are not
 DataMp_29 <- rbind.fill(DataMp_29,subset(DataMp_29_o, zone == "29"),subset(DataMp2, Provincia == "Huelva" & Estadillo == "1623"),subset(DataMp2, Provincia == "Huelva" & Estadillo == "1954"))
 # converting to sp before sf because dont know how
-DataMp_sp_29 <- SpatialPoints(DataMp_29[,c(11,12)], proj4string=CRS("+proj=utm +North +init=epsg:4230 +zone=29"))
+DataMp_sp_29 <- SpatialPoints(DataMp_29[,c(11,12)], proj4string=CRS("+proj=utm +North +zone=29"))
 DataMp_sp_29 <- SpatialPointsDataFrame(DataMp_sp_29,DataMp_29, coords.nrs = c(11,12))
 # converting to sf object
 DataMp_sf_29 <- st_as_sf(DataMp_sp_29)
@@ -84,7 +84,9 @@ DataMp_30 <- DataMp_30[complete.cases(DataMp_30$CoorXp),]
 # Binding Data from 30 zone and the  remaining intercept, except three plot from Huelva that should not be here
 DataMp_30 <- rbind.fill(droplevels(DataMp_30[-which(DataMp_30$Provincia == "Huelva"), ] ),subset(DataMp_29_o, zone == "30"))
 # converting to sp before sf because dont know how
-DataMp_sp_30 <- SpatialPoints(DataMp_30[,c(11,12)], proj4string=CRS("+proj=utm +North +init=epsg:4230 +zone=30"))
+DataMp_sp_30 <- SpatialPoints(DataMp_30[,c(11,12)], proj4string=CRS("+proj=utm +North +zone=30"))
+#DataMp_sp_30 <- SpatialPoints(DataMp_30[,c(11,12)], proj4string=CRS("+init=epsg:4230"))
+# CRS argument used to have this -> +init=epsg:4230  but now it doesnt work. We should ask Jannes
 DataMp_sp_30 <- SpatialPointsDataFrame(DataMp_sp_30,DataMp_30, coords.nrs = c(11,12))
 # converting to sf object
 DataMp_sf_30 <- st_as_sf(DataMp_sp_30)
@@ -96,5 +98,5 @@ DataMp_sf_30 <- st_transform(DataMp_sf_30,4258)
 DataMp_sf <- do.call(rbind,list(DataMp_sf_29, DataMp_sf_30))
 st_geometry(DataMp_sf)
 
-#mapview(DataMp_sf)
+# mapview(DataMp_sf)
 #st_write(DataMp_sf, "Andalucia.shp")

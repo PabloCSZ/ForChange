@@ -107,113 +107,118 @@ Fechas <- year_data %>%
   summarise(year2 = mean(year2), year3 = mean(year3))%>%
   filter(!Provincia_3 %in% c("Zamora" , "Ourense", "Toledo", "Lugo"))
   
-write.csv(Fechas, "products/fechas.csv")
+#write.csv(Fechas, "products/fechas.csv")
   
-T3T2 <- merge(T3T2, year_data[,c(8:10)], by = c("Provincia_3", "Estadillo_3"), all.x = TRUE)
+T3T2_ <- left_join(T3T2, year_data[,c(5,8:10)], by = c("Provincia_3", "Estadillo_3"), all.x = TRUE)
+
+
+# Apparently one tree was labeled with the wrong species, so I fixed here
+T3T2_[c(T3T2_$Provincia_3 == "Lugo" & T3T2_$Estadillo_3 == "2894" & T3T2_$OrdenIf3_3 =="007"), "specie"] <- "045"
+
 
 ## Merging T3T2 with allo -------
-t3t2_allo <- left_join(T3T2, allo, by = c("specie" = "COD_SPP_IFN3"), all.x = TRUE)
+t3t2_allo <- left_join(T3T2_, allo, by = c("specie" = "COD_SPP_IFN3"), all.x = TRUE)
 
 ## calculating Biomass for T3 and T2 ----------
 
 # First step, exclude trees based on "state"
 
-t3t2_allo <- t3t2_allo %>%
-  filter(state == "V") # after this, there is no NA in "specie"
+Plot30 <- t3t2_allo %>%
+  filter(state %in% c("R","V")) %>% # after this, there is no NA in "specie"
+  filter(Sp %in% c("Quercus ilex", NA))
+
+Plot30_p <- Plot30 %>%
+  group_by(Provincia_3, Estadillo_3, area_2) %>%
+  mutate(Tree_dens2 = n()/(0.000314159265*area_2^2)) %>% # Tree per ha
+  group_by(Provincia_3, Estadillo_3, area_3) %>%
+  mutate(Tree_dens3 = n()/(0.000314159265*area_3^2)) %>% # Tree per ha
+  group_by(Provincia_3, Estadillo_3) %>%
+  summarise(Tree_dens2 = sum(Tree_dens2, na.rm = TRUE), Tree_dens3 = sum(Tree_dens3, na.rm = TRUE)) # at plot level
+
+
+## Functional trait data from 2018 --------------
+Muestreo_18 <- read_excel("data/new_data/Muestreo_18_e.xlsx", 
+                          sheet = "Arbolado", col_types = c("text", 
+                                                            "numeric", "numeric", "text", "numeric", 
+                                                            "text", "numeric", "text", "numeric", 
+                                                            "numeric", "numeric", "numeric", 
+                                                            "text", "numeric", "numeric", "numeric", 
+                                                            "numeric", "numeric", "numeric", 
+                                                            "numeric", "numeric", "numeric", 
+                                                            "numeric", "numeric", "numeric", 
+                                                            "text"))
+
+Muestreo_18$Provincia <- stringi::stri_trans_general(Muestreo_18$Provincia, "Latin-ASCII") # removing accents for the merge
+Muestreo_18$Parcela <- str_sub(Muestreo_18$Parcela, start = -4)
+colnames(Muestreo_18)[2:22] <- c("Estadillo", "nArbol_3", "OrdenIf3", "A3", "OrdenIf4", "A4",
+                                 "Sp_m", "per_ifn", "Ht_ifn","Per", "Ht", "def", "LTy", "LMAy",
+                                 "LDy", "LAy", "LTo", "LMAo", "LDo", "LAo", "WDMCo")
+Muestreo_18$def <- as.numeric(Muestreo_18$def)
+Muestreo_18 <- Muestreo_18 %>%
+  mutate(Dn_m = Per/3.1416*10, Dn_ifn = per_ifn/3.1416*10) %>%  # Now diameter is in mm like in the IFN 
+  dplyr::select(-nArbol_3,-A3, -OrdenIf4, -A4, -LTy, -LMAy, -LDy, -LAy, -PETplot, -Observaciones) %>%
+  filter(Sp_m == "Quercus ilex") %>%
+  mutate(OrdenIf3 = str_pad(OrdenIf3, 3, pad = "0")) %>%
+  dplyr::select(-Sp_m, -per_ifn, -Ht_ifn, -Dn_ifn)
+
+
+## merging T3_A and functional traits ------ 
+
+T3_A2 <- right_join(T3_A[,c(-3:-5,-8, -10:-12, -14:-20, -23)], Muestreo_18, by = c("Provincia_3" = "Provincia", "Estadillo_3" = "Estadillo", "OrdenIf3_3" = "OrdenIf3"), all.y = TRUE)
+T3_A2 <- T3_A2[-c(str_which(T3_A2$OrdenIf3_3, "[:alpha:]")),] # Deleting cases with new, miss, or dead trees (text data in OrdenIf3_3)
+
+T3_A3 <- left_join(T3_A2, year_data[,c(4,5,8,9)], by = c("Provincia_3", "Estadillo_3"))
+T3_A3 <- T3_A3 %>%
+  mutate(year_m = 2018)
+
+
+# Carefull with this part, we are mannually changing Lugo with data from the IFN4
+T3_A3[187:192, "Distancia_3"] <- c(6.8, 9.2, 4.9, 9.8,5.6, 4.6) # Distancia_3
+T3_A3[187:192, "Dn_3"] <- c(41/3.1416*10, 41/3.1416*10, 44/3.1416*10, 47/3.1416*10, 35/3.1416*10, 25/3.1416*10) # Dn_3
+T3_A3[187:192, "Ht_3"] <- c(6.6, 6, 5.8, 5.6,5.1, 4.8) # Ht_3
+T3_A3[187:192, "area_3"] <- c(10, 10, 5, 10, 10, 5) # area_3
+T3_A3[187:192, "year3"] <- 2009 # year3
+
+# Calculating Plot biomass, RGR, and productivity at tree level
+
 #areal biomass
-t3t2_allo <- t3t2_allo %>%
-  mutate(AB3_kgT = CFA*(Dn_3/10)^b, # Biomass in kg per tree
-         AB2_kgT = CFA*(Dn_2/10)^b)
+T3_A3 <- T3_A3 %>%
+  drop_na(Dn_3, Dn_m) %>%
+  mutate(AB3_kgT_18 = 0.10190040*(Dn_3/10)^2.477450, # Biomass in kg per tree
+         ABM_kgT_18 = 0.10190040*(Dn_m/10)^2.477450)
 
-#Root biomass
-t3t2_allo <- t3t2_allo %>%
-  mutate(RB3_kgT = CFAr*(Dn_3/10)^br, # Biomass in kg per tree
-         RB2_kgT = CFAr*(Dn_2/10)^br)
-
-## calculating Biomass (Mg) per Ha for T3 and T2 ------------------
-t3t2_allo <- t3t2_allo %>%
-  mutate(AB3_Mgha = AB3_kgT/(0.000314159265*area_2^2)/1000, # Biomass T3 in Mg per ha
-         AB2_Mgha = AB2_kgT/(0.000314159265*area_2^2)/1000, # Biomass T2
-         RB3_Mgha = RB3_kgT/(0.000314159265*area_2^2)/1000, # Biomass R3
-         RB2_Mgha = RB2_kgT/(0.000314159265*area_2^2)/1000) # Biomass R2
-
+## calculating Biomass (Mg) per Ha for T3 and Manolo sampling ------------------
+T3_A3 <- T3_A3 %>%
+  mutate(AB3_Mgha_18 = AB3_kgT_18/(0.000314159265*area_3^2)/1000, # Biomass T3 in Mg per ha
+         ABM_Mgha_18 = ABM_kgT_18/(0.000314159265*area_3^2)/1000) # Biomass T2
+         
 # There are several ways to to calculate the previous variables. Intuitively, it make sense to calculcate the areal biomass from the IFN3 using "area_3" because it woukd provide an accurate 
 # representation of the biomass per area in that moment. However, in our case is more important to make an accurate comparisson with the IFN2. Therefore, we need to use "area_2" in all equation.
 # At the end, we are not really calculating the biomass per area in the IFN3. We are calculation how much biomass there is in the trees from the IFN2 that are still alive in the IFN3. 
 
 ## calculation RGR between T3 and T2 -----------------
-t3t2_allo <- t3t2_allo %>%
-  mutate(A_RGR = (log(AB3_kgT)/log(AB2_kgT))/(difyear*1000), # RGR
-         R_RGR = (log(RB3_kgT)/log(RB2_kgT))/(difyear*1000), # in Mg per year
-         B_BP_Mgha = (AB3_Mgha - AB2_Mgha)/difyear, # Biomass production
-         R_BP_MgHa = (RB3_Mgha - RB2_Mgha)/difyear)# Root Biomass 
+T3_A3 <- T3_A3 %>%
+   mutate(A_RGR_18 = (log(ABM_kgT_18) - log(AB3_kgT_18))/((year_m - year3)*1000), # RGR
+         B_BP_Mgha_18 = (ABM_Mgha_18 - AB3_Mgha_18)/(year_m - year3)) # Biomass production
+ 
+# Calculating plot data from 2018 sampling
 
-
-#filter(B_RGR > 0 & B_RGR < 100) # a filter to avoid negative growth and too high values       
-# This is going to be need it according to the variable you are measuring.
-
-#write.csv(t3t2_allo, "products/plots30.csv")
-
-## Summary tables before any future addition to the field data ----------
-
-Plot30 <- t3t2_allo %>% ## Filtering unnecesarry data at the moment 
-  dplyr::select(-Cla_3:-Compara_3, -Provincia_2:-ParamEsp_2, -Correspondencia:-CFAr,
-                -RB3_kgT, -RB2_kgT, -RB3_Mgha, -RB2_Mgha, -R_RGR, -R_BP_MgHa)
-  
-
-Plot30_p <- Plot30 %>%
-  drop_na(AB3_kgT) %>%
-  group_by(Provincia_3, Estadillo_3, area_2) %>%
+Plot30_18 <- T3_A %>%
+  filter(!is.na(OrdenIf3_3), !OrdenIf3_3 %in% c("000", "888", "777", "999")) %>%
+  group_by(Provincia_3, Estadillo_3, area_3) %>%
   summarise(N_Trees = n()) %>%
-  mutate(Tree_dens = N_Trees/(0.000314159265*area_2^2)) %>% # Tree per ha
+  mutate(Tree_dens = N_Trees/(0.000314159265*area_3^2)) %>% # Tree per ha
   group_by(Provincia_3, Estadillo_3) %>%
-  summarise(N_Trees = sum(N_Trees), Tree_dens = sum(Tree_dens))
+  summarise(N_Trees = sum(N_Trees), Tree_dens = sum(Tree_dens)) # Tree density at plot level (all species)
 
-Plot30_sp <- Plot30 %>%
-  tidyr::drop_na(AB3_kgT) %>%
-  group_by(Provincia_3, Estadillo_3,Sp) %>%
-  summarise(AB3_kgT = sum(AB3_kgT), AB2kgT = sum(AB2_kgT), AB3_Mgha = sum(AB3_Mgha), AB2_Mgha = sum(AB2_Mgha), A_RGR = mean(A_RGR),
-            B_BP_Mgha = sum(B_BP_Mgha), difyear = mean(difyear)) %>% #Table with N trees by Provincia, estadillo and Sp 
-  mutate(S_RGR = log(AB3_Mgha)/log(AB2_Mgha)/difyear) # another RGR for plot level Mg per ha per year? 
-  
-Plot30_sp <- left_join(Plot30_sp, Plot30_p, by = c("Provincia_3", "Estadillo_3"))
-
-## merging T3_A and functional traits ------ # This part is not ready yet
-
-T3_A2 <- leaft_join(T3_A, Muestreo_18, by = c("Provincia_3" = "Provincia", "Estadillo_3" = "Estadillo", "OrdenIf3_3" = "OrdenIf3"))
-leaf_n <- leaf_n %>% 
-  filter(Sp_m == "Quercus ilex") %>%
-  filter(!OrdenIf3 == "Nuevo", !OrdenIf3 == "Muerto")
+Plot30_m <- T3_A3 %>%
+  group_by(Provincia_3, Estadillo_3) %>%
+  summarise(AB3_kgT_18 = mean(AB3_kgT_18), ABM_kgT = mean(ABM_kgT_18), AB3_Mgha_18 = sum(AB3_Mgha_18), 
+            ABM_Mgha_18 = sum(ABM_Mgha_18), A_RGR_18 = mean(A_RGR_18),
+            B_BP_Mgha_18 = sum(B_BP_Mgha_18), 
+            Ht_3 = mean(Ht_3), def = mean(def), LTo = mean(LTo, na.rm = TRUE), LMAo = mean(LMAo, na.rm = TRUE), LDo = mean(LDo, na.rm = TRUE), 
+            LAo = mean(LAo, na.rm = TRUE), WDMCo = mean(WDMCo, na.rm = TRUE), PPplot = mean(PPplot)) %>% #Table with N trees by Provincia, estadillo
+  mutate(S_RGR_18 = log(ABM_Mgha_18)/log(AB3_Mgha_18)/yeardif) # another RGR for plot level Mg per ha per year? 
 
 
-summary(as.factor(leaf_n$OrdenIf3))
-summary(as.factor(T3_A$nArbol_3))
-
-TreesI3 %>%
-  filter(Provincia == "Lugo", Estadillo == "2850")
-
-T3_A %>%
-  filter(Provincia_3 == "Lugo", Estadillo_3 == "2894")
-Muestreo_18 %>%
-  filter(Provincia == "Toledo", Parcela == "1383")
-
-
-## merging with IFN3-------------
-
-t3t2_test <- right_join(t3t2_allo, leaf_n, by = c("Provincia", "Estadillo", "nArbol_3"))
-
-#After checking T3_A, I noticed leaf_n was made using trees not included in T2_A (OrdenIF2 == 000).
-# This is an example
-T2_A %>%
-  filter(Provincia_2 == "Toledo", Estadillo_2 == "1383")
-#Which means we can not calculate RGR or Biomass productivity
-
-## Filtering NA from the leaf data -------
-t3t2_test <- t3t2_test %>%
-  filter(is.na(OrdenIf3_3))
-
-
-# print results
-
-
-
+Plot30_m <- left_join(Plot30_m, Plot30_18, by = c("Provincia_3", "Estadillo_3"))
